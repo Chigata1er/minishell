@@ -1,0 +1,539 @@
+valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all --leak-resolution=high ./minishell
+valgrind --leak-check=full --track-origins=yes ./minishell
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./minishell
+
+echo 'echo "hello world"' | valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./minishell
+echo 'echo "one two three four five" | tr ' ' '\n' | sort | uniq
+five' | valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./minishell
+
+valgrind --leak-check=full --show-leak-kinds=definite ./minishell
+valgrind -s --track-origins=yes ./minishell 
+valgrind --leak-check=full env -i ./minishell
+grep -rnw . -e "status_setter" --include="*.{c,h}"
+grep -rnw . -e "status_setter" --include="*.c"
+ft_strchr
+grep -rnw . -e "ft_strchr" --include="*.c"
+grep -rnw . -e "itoa" --include="*.c"
+grep -rnw . -e "add_member" --include="*.c"
+grep -rnw . -e "creatdup" --include="*.c"
+grep -rnw . -e "error_announcer" --include="*.c"
+grep -rnw . -e "getcontent" --include="*.c"
+grep -rnw . -e "duplicate_env" --include="*.c"
+grep -rnw . -e "bashvar_norm" --include="*.c"
+grep -rnw . -e "update_and_wait" --include="*.c"
+
+echo "Hello, world!" > input.txt
+cat < input.txt
+
+echo 'hello world' > output.txt
+cat output.txt
+
+cat >> EOF
+This is a test line.
+Another line for input.
+EOF
+
+cat << END
+This is a test line.
+Another line for input.
+END
+
+$ echo "This will be appended" >> output.txt
+$ echo "Another line" >> output.txt
+$ cat output.txt
+This will be appended
+Another line
+
+type export
+type unset
+command -v export
+command -v unset
+
+export is a shell builtin
+unset is a shell builtin
+
+export MY_VAR="Hello"
+echo $MY_VAR
+Hello
+export NEW_VAR="World"
+echo $NEW_VAR
+World
+unset MY_VAR
+echo $MY_VAR
+
+# (empty, as expected)
+
+
+
+minishell$ echo "Hello, world!" | grep "world"
+world
+minishell$ echo "This is a test" | grep "test" | wc -w
+1
+minishell$ cat file.txt | grep "searchTerm"
+minishell$ echo "one two three four five" | tr ' ' '\n' | sort | uniq
+five
+four
+one
+three
+two
+cat input.txt | grep "hello" | wc -l > output.txt
+cat input.txt | grep "hello" | sort | wc -l > output.txt
+./pipex infile cmd1 cmd2 cmd3 outfile
+
+The `$?` command in a shell (like Bash) is a special variable that stores the **exit status** of the last executed command. The exit status is a numeric value:  
+- `0` means the last command executed **successfully**.  
+- A **non-zero** value means the last command **failed**.  
+
+### **How to Test `$?` in Shell**
+You can try these simple tests in your terminal:
+
+#### **1. Checking a Successful Command**
+```sh
+echo "Hello, world!"
+echo $?  # This should print 0 because echo ran successfully
+```
+
+#### **2. Checking a Failed Command**
+```sh
+ls /nonexistentfolder  # This will fail because the folder doesn't exist
+echo $?  # This will print a non-zero number (error code)
+```
+
+#### **3. Using `$?` in an `if` Condition**
+```sh
+mkdir test_folder
+if [ $? -eq 0 ]; then
+  echo "Command succeeded!"
+else
+  echo "Command failed!"
+fi
+```
+126-IN MINISHELL OK
+# Step 1: Create a directory (if it doesn't exist)
+mkdir /tmp/mydir
+
+# Step 2: Try to run the directory as a command
+./minishell
+$ /tmp/mydir
+
+# Expected output:
+# minishhell: is a directory
+
+# Step 3: Check the exit code
+$ echo $?
+126
+
+In SHELL: OK
+$ mkdir test_directory
+$ ls test_directory
+$ ./test_directory    # Try running a directory like a command
+bash: ./test_directory: Is a directory
+$ echo $?             # Check the exit status
+126
+
+Here are several commands that you can run in the shell to test different exit codes:
+
+### 1. **Exit code `0` (Success)** OK
+
+* Running a valid command:
+
+  ```bash
+  echo "hello world"
+  echo $?
+  ```
+
+  Expected output: `0`
+
+### 2. **Exit code `127` (Command Not Found)** OK
+
+* Trying to run a command that does not exist:
+
+  ```bash
+  non_existent_command
+  echo $?
+  ```
+
+  Expected output: `127`
+
+### 3. **Exit code `126` (Command Found but Not Executable)**: NOT OK
+
+* For this, create a file that is not executable:
+
+  ```bash
+  touch my_script.sh
+  chmod -x my_script.sh
+  ./my_script.sh
+  echo $?
+  ```
+
+  Expected output: `126`
+
+### 4. **Exit code `2` (Misuse of Shell Builtins or Syntax Error)** OK
+
+* Running a command with incorrect syntax, such as a missing closing quote:
+
+  ```bash
+  echo "hello;)
+  echo $?
+  ```
+
+  Expected output: `2`
+
+  Or using a command with incorrect arguments: OK
+
+  ```bash
+  ls --invalid-option
+  echo $?
+  ```
+
+  Expected output: `2`
+
+### 5. **Exit code `2` (General Error)** OK
+
+* A command that runs but encounters a general error (e.g., `grep` with no input):
+
+  ```bash
+  grep "something" non_existent_file
+  echo $?
+  ```
+
+  Expected output: `2`
+
+A **simple example** that gives **exit code `1`** in a real shell (like Bash) is trying to execute a **non-binary, non-script file** with the executable permission:
+
+--- (In my computer, it is 127)
+
+### ✅ Example
+
+```bash
+echo "hello world" > mybin
+chmod +x mybin
+./mybin
+```
+
+### 🔁 Output in Bash:
+
+```
+bash: ./mybin: cannot execute binary file: Exec format error
+```
+
+```bash
+echo $?
+```
+
+```
+1
+```
+
+---
+
+### 🔍 Explanation:
+
+* `mybin` is just a **text file** with no valid interpreter (like a shebang `#!/bin/bash`).
+* Shell tries to `execve()` it as a binary.
+* It fails with `ENOEXEC` — *“Exec format error”*.
+* Bash then prints the error and returns exit code `1`.
+
+
+#!/bin/bash
+exit 1
+
+$ ./script.sh
+$ echo $?
+1
+
+By running these commands, you can test how your minishell handles different exit codes.
+
+Modifications from Lien's part:
+
+Make file: Replace the final sentence like this:
+
+.PHONY: all clean fclean re norm succes
+
+"exit must exit with one argument and not numeric argument"
+
+Built-in->exit.c: replace the function of run_exit like this:
+int	run_exit(t_cmd_table **head, char **cmd_table, t_my_env **env)
+{
+	write(1, "exit\n", 5);
+	if (!cmd_table[1])
+		clean_area(head, env, 0);
+	if (cmd_table[1] && cmd_table[2])
+	{
+		error_announcer("exit: too many arguments", 0);
+		return (status_setter(1, 1));
+	}
+	if (cmd_table[1] && integer(cmd_table[1]))
+		clean_area(head, env, to_uns(ft_atoi(cmd_table[1])));
+	ft_putstr_fd("exit: ", 2);
+	ft_putstr_fd(cmd_table[1], 2);
+	ft_putendl_fd(": numeric argument required", 2);
+	clean_area(head, env, 255);
+	return (1);
+}
+
+"export must create a new set: export hello instead of zsh: segmentation fault"  
+
+libft->ft_strdup: replace the function of ft_strdup like this:
+char	*ft_strdup(const char *src)
+{
+	int		len;
+	int		i;
+	char	*dup;
+	if (!src)
+		return (NULL);
+	len = ft_strlen(src);
+	dup = (char *)malloc((len + 1) * sizeof(char));
+	if (dup == NULL)
+	{
+		return (NULL);
+	}
+	i = 0;
+	while (i < len)
+	{
+		dup[i] = src[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
+// Handle the built-in cd command
+// Return 0 if success, 1 or 2 for specific errors
+
+
+Built-in->cd.c
+int	run_cd(char **cmd_table, t_my_env **env)
+{
+	char	*goto_dir;
+
+	if (!cmd_table || !env)
+		return (1); // Protection against NULL input
+
+	// Case 1: Only 'cd' → Go to HOME
+	if (!cmd_table[1])
+	{
+		goto_dir = getcontent("HOME", env);
+		if (!goto_dir)
+			return (error_announcer("cd : HOME not set", 0), 1);
+		return (goto_new_dir(goto_dir, env));
+	}
+
+	// Case 2: 'cd -' → Go to OLDPWD
+	if (cmd_table[1][0] == '-')
+	{
+		if (cmd_table[1][1] == '\0')
+		{
+			goto_dir = getcontent("OLDPWD", env);
+			if (!goto_dir)
+				return (error_announcer("cd : OLDPWD not set", 0), 1);
+			return (goto_new_dir(goto_dir, env));
+		}
+		return (error_announcer("cd : invalid option", 0), 2);
+	}
+
+	// Case 3: 'cd path' → Go to specified path
+	goto_dir = ft_strdup(cmd_table[1]);
+	if (!goto_dir)
+		return (1); // Allocation failed
+	return (goto_new_dir(goto_dir, env));
+}
+
+Built-in->cd.c
+// Search for a variable name in the env list
+// and return a duplicated string of its content.
+// Return NULL if not found.
+
+char	*getcontent(char *toget, t_my_env **env)
+{
+	t_my_env	*curs;
+
+	if (!toget || !env || !*env)
+		return (NULL);
+	curs = *env;
+	while (curs)
+	{
+		if (ft_strcmp(toget, curs->var) == 0)
+			return (ft_strndup(curs->var_content, ft_strlen(curs->var_content)));
+		curs = curs->next;
+	}
+	return (NULL);
+}
+
+Exec
+Execution.c
+
+void update_and_wait(int *status, int pid)
+{
+	waitpid(pid, status, 0);
+	while (wait(NULL) != -1);
+	if (WIFEXITED(*status))
+		status_setter(WEXITSTATUS(*status), 1);
+}
+void	close_all_fd(void)
+{
+	int			i;
+	struct stat	fd_stat;
+
+	i = 3;
+	while (i < 256)
+	{
+		if(fstat(i, &fd_stat) == 0)
+			close(i);
+		i++;
+	}
+}
+void	execution(t_cmd_table	*cmd, t_my_env	*env)
+{
+	t_execvar	elem;
+
+	if (analyse_cmd(cmd))
+		return ;
+	init_vars(&elem);
+	first_builtin(cmd, &elem.condition, env);
+	while (cmd && elem.condition == 0)
+	{
+		elem.pid = my_pipes(cmd, env);
+		if (elem.pid == -1)
+			break ;
+		cmd = cmd->next;
+	}
+	dup2(elem.out, STDOUT_FILENO);
+	dup2(elem.in, STDIN_FILENO);
+	if (elem.in > 2)
+		close (elem.in);
+	if (elem.out > 2)
+		close (elem.out);
+	elem.status = 0;
+	if (elem.condition == 0)
+		update_and_wait(&elem.status, elem.pid);
+	return (close_all_fd());
+}
+
+utils.c
+void	copy_str(char *s1, char **key, char **value)
+{
+	int		i;
+	int		j;
+	int		key_length;
+	int		value_length;
+
+	str_length(s1, &key_length, &value_length);
+	(*key) = malloc (key_length + 1);
+	(*value) = malloc (value_length + 1);
+	i = 0;
+	j = key_length + 1;
+	while (key_length--)
+	{
+		(*key)[i] = s1[i];
+		i++;
+	}
+	(*key)[i] = '\0';
+	i = 0;
+	while (value_length--)
+	{
+		(*value)[i] = s1[i + j];
+		i++;
+	}
+	(*value)[i] = '\0'; 
+}
+
+Parse
+Data
+#define HEREDOC 3
+t_in_out	process_fd(t_cmd **head)
+{
+	t_cmd		*curs;
+	t_in_out	fd;
+
+	init_fd(&fd);
+	curs = (*head);
+	while (curs && curs->type != PIPE)
+	{
+		if (curs->category == FD_FILE)
+		{
+			if (curs->file == OUTFILE || curs->file == APPEND)
+			{
+				close_oldout(fd.out_fd);
+				fd.out_fd = open_fd(curs);
+			}
+			else if (curs->file == HEREDOC)
+			{
+				int pipefd[2];
+				if (pipe(pipefd) == -1)
+					return (error_announcer("pipe failed", 0), fd);
+				write(pipefd[1], curs->content, strlen(curs->content));
+				close(pipefd[1]);
+				fd.in_fd = pipefd[0];
+			}
+			else // for '<'
+			{
+				fd.in_fd = open(curs->content, O_RDONLY, 0666);
+			}
+			if (fd.out_fd == -1 || fd.in_fd == -1)
+				return (error_announcer(strerror(errno), 0), fd);
+		}
+		curs = curs->next;
+	}
+	return (fd);
+}
+
+Yes, you **can check that with Valgrind**, but you need to be careful with how you **run the command and pass arguments**.
+
+Here’s how to do it step by step:
+
+---
+
+### ✅ Run Valgrind on `minishell` with `echo "hello world"`
+
+If your `minishell` supports interactive or argument parsing correctly, run:
+
+```bash
+valgrind --leak-check=full --track-origins=yes ./minishell
+```
+
+Then **inside your shell**, type:
+
+```bash
+echo "hello world"
+```
+
+And then **exit** your minishell to let Valgrind finish analysis.
+
+---
+
+### 🔁 Alternative: Pipe the command into minishell
+
+If you want to **automate** the command (so you don't have to type it manually), use:
+
+```bash
+echo 'echo "hello world"' | valgrind --leak-check=full --track-origins=yes ./minishell
+```
+
+This will feed the command into `minishell` and let you analyze any memory leaks related to running that command.
+
+---
+
+### 📌 Tips
+
+- Make sure `minishell` is compiled with `-g`:
+  ```bash
+  make re CFLAGS='-Wall -Wextra -Werror -g'
+  ```
+
+- Use Valgrind options:
+  - `--leak-check=full`: Show detailed leak info.
+  - `--track-origins=yes`: Show origin of invalid memory usage.
+  - `--show-leak-kinds=all`: See all types of leaks.
+
+---
+
+### 🔍 Example command:
+
+```bash
+echo 'echo "hello world"' | valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./minishell
+```
+
+---
+
+Let me know if you want help analyzing Valgrind output or if you're getting strange results — sometimes it also shows leaks from libraries, not your own code.
